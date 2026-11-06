@@ -96,7 +96,7 @@ export const register: Register = on => {
             ) : null}
           </Box>
           {wins.length === 0 ? (
-            <Text color="inactive">No rate-limit data (not a subscription).</Text>
+            <Text color="inactive">Waiting for the first rate-limit reading (needs a Claude subscription).</Text>
           ) : null}
           {wins.map(w => {
             const used = Math.round(w.percentUsed)

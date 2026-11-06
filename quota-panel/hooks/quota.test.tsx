@@ -37,13 +37,13 @@ test('the panel draws one card per window, coloured by what is left', async ($, 
   await ui.unmount()
 })
 
-test('without rate-limit data the panel says so', async ($, on) => {
+test('before the first rate-limit reading the panel says it is waiting', async ($, on) => {
   on('state.get', () => ({ value: { value: { windows: [], usd: 1.5 }, version: 1 } }))
   on('clock.now', () => ({ value: NOW }))
   on('ui.render', () => null as never)
 
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
 
-  expect(await ui.find({ type: 'Text', text: /No rate-limit data/ })).not.toBeNull()
+  expect(await ui.find({ type: 'Text', text: /Waiting for the first rate-limit reading/ })).not.toBeNull()
   await ui.unmount()
 })

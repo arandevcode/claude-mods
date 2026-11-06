@@ -24,5 +24,5 @@ From a shell: `claude plugin install quota-panel --marketplace arandevcode/claud
 
 ## Notes
 
-- Needs a Claude subscription: the 5h and weekly windows come from Claude Code's own rate-limit data. Without one the panel only shows the session cost.
+- Needs a Claude subscription: the 5h and weekly windows come from Claude Code's own rate-limit data. Until the first response of the session reports them (or without a subscription) the panel waits and only shows the session cost.
 - Open it with `/quota`; it also opens when a session starts.
