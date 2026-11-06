@@ -1,0 +1,10 @@
+{
+  "name": "quota-panel",
+  "version": "0.1.0",
+  "description": "Side panel with your Claude rate-limit windows (5h / weekly): bars, % left, reset time and pace, plus session cost and toasts at 80/90/95%.",
+  "author": {
+    "name": "arandevcode"
+  },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

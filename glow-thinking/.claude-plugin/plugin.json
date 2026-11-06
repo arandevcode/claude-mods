@@ -1,0 +1,10 @@
+{
+  "name": "glow-thinking",
+  "version": "0.1.0",
+  "description": "IDLE / WORKING band above the prompt and a gradient border around every side panel: green at rest, rotating rainbow while Claude works. /thinking shows time per model.",
+  "author": {
+    "name": "arandevcode"
+  },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}
