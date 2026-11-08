@@ -20,7 +20,7 @@ Suite of mods for [Claude Code](https://claude.com/claude-code).
 | Mod | Type | Mirrors | Version | Description |
 |-----|------|---------|---------|-------------|
 | glow-thinking | `🧩 mod` | `opencode-thinking` | 0.1.0 | IDLE / WORKING band above the prompt and a gradient border around every side panel: green at rest, rotating rainbow while Claude works. /thinking shows time per model. |
-| quota-panel | `🧩 mod` | `opencode-quota-extended` | 0.1.0 | Side panel with your Claude rate-limit windows (5h / weekly): bars, % left, reset time and pace, plus session cost and toasts at 80/90/95%. |
+| quota-panel | `🧩 mod` | `opencode-quota-extended` | 0.1.1 | Side panel with your Claude rate-limit windows (5h / weekly): bars, % left, reset time and pace, plus session cost and toasts at 80/90/95%. |
 
 ## Install
 
