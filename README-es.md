@@ -32,7 +32,7 @@ Suite de mods para [Claude Code](https://claude.com/claude-code).
 En el prompt de una sesión de terminal. Cada mod es independiente.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking.png" alt="glow-thinking" width="420">
+  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking.gif" alt="glow-thinking" width="420">
   &nbsp;&nbsp;&nbsp;
   <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/quota-panel/images/quota-panel.png" alt="quota-panel" width="420">
   <br>
