@@ -25,7 +25,7 @@ Mod de Claude Code, espejo de [`opencode-thinking`](https://github.com/arandevco
 Cuando una tarea en background termina, despierta la sesión con un turno nuevo: la banda vuelve a `WORKING` y luego a `IDLE`.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking.png" alt="Los tres estados juntos" width="460">
+  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking-states.png" alt="Los tres estados juntos" width="460">
 </p>
 
 ## Instalar
