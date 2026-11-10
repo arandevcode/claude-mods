@@ -1,18 +1,32 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking.png" alt="Bandas IDLE y WORKING con borde en degradado" width="460">
+  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking.gif" alt="Bandas WORKING, WAITING e IDLE con borde en degradado" width="460">
   <br>
-  <sub><em>Bandas IDLE y WORKING con borde en degradado (datos inventados)</em></sub>
+  <sub><em>WORKING → WAITING → IDLE durante un turno con un subagente y una tarea en background (datos inventados)</em></sub>
 </p>
 
 # glow-thinking
 
-Banda IDLE / WORKING sobre el prompt y borde en degradado alrededor de cada panel lateral: verde en reposo, arcoíris giratorio mientras Claude trabaja. `/thinking` muestra el tiempo por modelo.
+Una banda de estado sobre el prompt y un borde en degradado alrededor de cada panel lateral que te dicen de un vistazo si Claude está ocupado, esperando trabajo en background o libre. `/thinking` muestra el tiempo por modelo.
 
 Mod de Claude Code, espejo de [`opencode-thinking`](https://github.com/arandevcode/opencode-plugins/tree/main/opencode-thinking) para OpenCode. Funciona en local, sin telemetría y sin red.
 
 > 🇬🇧 Also available in [English](README.md)
 
 > 🔁 ¿Quieres esto en OpenCode? Mira [opencode-thinking](https://github.com/arandevcode/opencode-plugins/tree/main/opencode-thinking).
+
+## Estados
+
+| Banda | Borde | Significado |
+| --- | --- | --- |
+| `WORKING` | arcoíris giratorio | El turno principal **o cualquier subagente** está en marcha. |
+| `WAITING · MONITOR` / `TASK` / `SCHEDULE` | ámbar | El turno terminó pero sigue vivo un monitor, una tarea en background o un despertar programado (con recuento, p. ej. `WAITING · 2 TASKS`). |
+| `IDLE` | verde | No hay nada en marcha ni pendiente. |
+
+Cuando una tarea en background termina, despierta la sesión con un turno nuevo: la banda vuelve a `WORKING` y luego a `IDLE`.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking.png" alt="Los tres estados juntos" width="460">
+</p>
 
 ## Instalar
 
@@ -21,6 +35,10 @@ Mod de Claude Code, espejo de [`opencode-thinking`](https://github.com/arandevco
 ```
 
 Desde una shell: `claude plugin install glow-thinking --marketplace arandevcode/claude-mods`.
+
+## Actualizar
+
+Ejecuta `/plugin update glow-thinking` y **reinicia la sesión**: un mod ya cargado no se sustituye en una sesión en marcha (`/reload-plugins` no basta). Si el plugin está instalado en más de un ámbito, actualiza cada uno, p. ej. `claude plugin update glow-thinking@arandevcode-mods --scope user`.
 
 ## Notas
 

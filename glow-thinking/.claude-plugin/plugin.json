@@ -1,7 +1,7 @@
 {
   "name": "glow-thinking",
-  "version": "0.1.1",
-  "description": "IDLE / WORKING band above the prompt and a gradient border around every side panel: green at rest, rotating rainbow while Claude works. /thinking shows time per model.",
+  "version": "0.2.0",
+  "description": "Status band above the prompt and gradient border around every side panel: WORKING (rainbow) while the turn or any subagent runs, WAITING (amber) for monitors and background tasks, IDLE (green) when done. /thinking shows time per model.",
   "author": {
     "name": "arandevcode"
   },

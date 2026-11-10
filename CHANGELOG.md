@@ -6,12 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-### glow-thinking (0.1.1)
+### glow-thinking (0.2.0)
 
 - Fix: the band stayed IDLE while subagents were still running after the main
   turn ended. WORKING now covers the main turn and every subagent loop.
 - New: `WAITING · MONITOR` / `WAITING · 2 TASKS` / `SCHEDULE` (amber) when the
   turn is over but background tasks, monitors or scheduled wakeups are in flight.
+- Docs: new States table, update instructions, and refreshed image and GIF.
 
 ## [0.1.1] - 2026-11-08
 

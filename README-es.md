@@ -19,7 +19,7 @@ Suite de mods para [Claude Code](https://claude.com/claude-code).
 
 | Mod | Tipo | Espejo de | Versión | Descripción |
 |-----|------|-----------|---------|-------------|
-| glow-thinking | `🧩 mod` | `opencode-thinking` | 0.1.0 | IDLE / WORKING band above the prompt and a gradient border around every side panel: green at rest, rotating rainbow while Claude works. /thinking shows time per model. |
+| glow-thinking | `🧩 mod` | `opencode-thinking` | 0.2.0 | Status band above the prompt and gradient border around every side panel: WORKING (rainbow) while the turn or any subagent runs, WAITING (amber) for monitors and background tasks, IDLE (green) when done. /thinking shows time per model. |
 | quota-panel | `🧩 mod` | `opencode-quota-extended` | 0.1.1 | Side panel with your Claude rate-limit windows (5h / weekly): bars, % left, reset time and pace, plus session cost and toasts at 80/90/95%. |
 
 ## Instalar
