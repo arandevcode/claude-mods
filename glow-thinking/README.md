@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking.gif" alt="WORKING, WAITING and IDLE bands, gradient border" width="460">
   <br>
-  <sub><em>WORKING → WAITING → IDLE over a turn with a subagent and a background task (made-up data)</em></sub>
+  <sub><em>WORKING → WAITING → IDLE in a real session (everything that is not the plugin is blurred)</em></sub>
 </p>
 
 # glow-thinking

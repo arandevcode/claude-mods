@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking.gif" alt="Bandas WORKING, WAITING e IDLE con borde en degradado" width="460">
   <br>
-  <sub><em>WORKING → WAITING → IDLE durante un turno con un subagente y una tarea en background (datos inventados)</em></sub>
+  <sub><em>WORKING → WAITING → IDLE en una sesión real (todo lo que no es el plugin está desenfocado)</em></sub>
 </p>
 
 # glow-thinking
