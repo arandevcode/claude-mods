@@ -22,7 +22,7 @@ Mod de Claude Code, espejo de [`opencode-thinking`](https://github.com/arandevco
 | `WAITING · MONITOR` / `TASK` / `SCHEDULE` | ámbar | El turno terminó pero sigue vivo un monitor, una tarea en background o un despertar programado (con recuento, p. ej. `WAITING · 2 TASKS`). |
 | `IDLE` | verde | No hay nada en marcha ni pendiente. |
 
-Cuando una tarea en background termina, despierta la sesión con un turno nuevo: la banda vuelve a `WORKING` y luego a `IDLE`.
+Un shell en background, incluida la herramienta Monitor, aparece como `TASK`; `MONITOR` es para monitores MCP. Cuando una tarea en background termina, despierta la sesión con un turno nuevo: la banda vuelve a `WORKING` y luego a `IDLE`.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking-states.png" alt="Los tres estados juntos" width="460">

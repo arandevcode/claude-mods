@@ -1,7 +1,7 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/quota-panel/images/quota-panel.png" alt="Quota side panel" width="460">
+  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/quota-panel/images/quota-panel.gif" alt="Quota side panel" width="460">
   <br>
-  <sub><em>Quota side panel (made-up data)</em></sub>
+  <sub><em>Fresh reading, then flagged as stale after 10 minutes, then refreshed (made-up data)</em></sub>
 </p>
 
 # quota-panel
@@ -26,3 +26,4 @@ From a shell: `claude plugin install quota-panel --marketplace arandevcode/claud
 
 - Needs a Claude subscription: the 5h and weekly windows come from Claude Code's own rate-limit data. Until the first response of the session reports them (or without a subscription) the panel waits and only shows the session cost.
 - Open it with `/quota`; it also opens when a session starts.
+- Under the title it says how long ago the numbers were read (`read 3m ago`). The limits only refresh when a response reports them, so after 10 minutes it turns amber (`⚠ read 14m ago · send a message to refresh`), and a window that reset since the reading is flagged instead of shown as current.

@@ -1,7 +1,7 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/quota-panel/images/quota-panel.png" alt="Panel lateral de cuota" width="460">
+  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/quota-panel/images/quota-panel.gif" alt="Panel lateral de cuota" width="460">
   <br>
-  <sub><em>Panel lateral de cuota (datos inventados)</em></sub>
+  <sub><em>Lectura reciente, marcada como caducada a los 10 minutos y refrescada después (datos inventados)</em></sub>
 </p>
 
 # quota-panel
@@ -26,3 +26,4 @@ Desde una shell: `claude plugin install quota-panel --marketplace arandevcode/cl
 
 - Necesita una suscripción de Claude: las ventanas de 5h y semanal salen de los datos de límite de Claude Code. Sin ella el panel solo muestra el coste de la sesión.
 - Se abre con `/quota`; también se abre al iniciar la sesión.
+- Bajo el título indica hace cuánto se leyeron los datos (`read 3m ago`). Los límites solo se refrescan cuando una respuesta los trae, así que a los 10 minutos se pone ámbar (`⚠ read 14m ago · send a message to refresh`), y una ventana que se reseteó desde la lectura se marca en vez de mostrarse como vigente.

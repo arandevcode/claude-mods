@@ -5,7 +5,9 @@ import type { ModelStat } from '../types'
 
 const stats = atom({ plugin: 'glow-thinking', key: 'stats2' } as const, {} as Record<string, ModelStat>)
 // What the borders read: whether a turn runs, and the animation frame.
-const live = atom({ plugin: 'glow-thinking', key: 'live' } as const, { isWorking: false, frame: 0, waiting: '' })
+const live = atom({ plugin: 'glow-thinking', key: 'live' } as const, { isWorking: false, waiting: '' })
+// The animation frame lives apart, so its ticks can never race a state change.
+const frameAtom = atom({ plugin: 'glow-thinking', key: 'frame' } as const, 0)
 
 const IDLE_COLOR = 'success'
 const WAIT_COLOR = 'warning'
@@ -45,18 +47,29 @@ const fmt = (ms: number) => {
 
 type Run = { main: boolean; agents: Set<string>; timer: { cancel: () => void } | null }
 
+// Write `live`, retrying if the write is beaten: the band must never be left stale
+// because one write lost a race.
+async function patchLive($: any, fn: (s: { isWorking: boolean; waiting: string }) => { isWorking: boolean; waiting: string }) {
+  for (let i = 0; i < 8; i++) {
+    try {
+      await update($, live, fn)
+      return
+    } catch { /* write beaten, try again */ }
+  }
+}
+
 // WORKING while the main turn or any subagent/teammate loop runs.
 async function sync($: any, run: Run) {
   const busy = run.main || run.agents.size > 0
   if (busy && !run.timer) {
     run.timer = $.clock.every(180, () => {
-      void update($, live, s => ({ ...s, frame: s.frame + 1 })).catch(() => {})
+      void update($, frameAtom, n => n + 1).catch(() => {})
     })
   } else if (!busy && run.timer) {
     run.timer.cancel()
     run.timer = null
   }
-  await update($, live, s => ({ isWorking: busy, frame: busy ? s.frame : 0, waiting: busy ? '' : s.waiting }))
+  await patchLive($, s => ({ isWorking: busy, waiting: busy && !s.isWorking ? '' : s.waiting }))
 }
 
 export const register: Register = on => {
@@ -87,14 +100,15 @@ export const register: Register = on => {
 
   // When a turn ends, the engine says what is still running in the background.
   on('classic.Stop', async ($, e, next) => {
-    run.main = false
+    // Keep the label whatever the order: Stop can land before turn.complete,
+    // and WORKING wins over WAITING on screen anyway.
     const waiting = waitLabel(e.background_tasks, e.session_crons)
-    await update($, live, s => ({ ...s, waiting: s.isWorking ? '' : waiting }))
+    await patchLive($, s => ({ ...s, waiting }))
     return next(e)
   })
   on('classic.SubagentStop', async ($, e, next) => {
     const waiting = waitLabel(e.background_tasks, e.session_crons)
-    await update($, live, s => ({ ...s, waiting: s.isWorking ? '' : waiting }))
+    await patchLive($, s => ({ ...s, waiting }))
     return next(e)
   })
 
@@ -108,19 +122,24 @@ export const register: Register = on => {
     if (e.agentId === undefined) {
       run.main = false
       bump(model).thinkingMs += (await $.clock.now()) - startedAt
+    } else run.agents.delete(e.agentId)
+    // The band first: it must follow the turn even if the stats write fails.
+    await sync($, run)
 
+    if (e.agentId === undefined) {
       const add = { ...pending }
       for (const k of Object.keys(pending)) delete pending[k]
-      await update($, stats, all => {
-        const out = { ...all }
-        for (const [m, s] of Object.entries(add)) {
-          const prev = out[m] ?? { steps: 0, thinkingMs: 0 }
-          out[m] = { steps: prev.steps + s.steps, thinkingMs: prev.thinkingMs + s.thinkingMs }
-        }
-        return out
-      })
-    } else run.agents.delete(e.agentId)
-    await sync($, run)
+      try {
+        await update($, stats, all => {
+          const out = { ...all }
+          for (const [m, s] of Object.entries(add)) {
+            const prev = out[m] ?? { steps: 0, thinkingMs: 0 }
+            out[m] = { steps: prev.steps + s.steps, thinkingMs: prev.thinkingMs + s.thinkingMs }
+          }
+          return out
+        })
+      } catch { /* stats are best effort */ }
+    }
     return next(e)
   })
 
@@ -128,7 +147,8 @@ export const register: Register = on => {
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey) return next(e)
     const { Box, Text } = $.ui.resolve(e)
-    const { isWorking, frame, waiting } = await read($, live)
+    const { isWorking, waiting } = await read($, live)
+    const frame = await read($, frameAtom)
 
     // Keep what other mods draw here (the HUD) and put the band beneath it.
     const rest = await next(e)
@@ -161,7 +181,8 @@ export const register: Register = on => {
   on('ui.render', { component: 'Pane' }, async ($, e, next) => {
     const inner = await next(e)
     const { Box, Text } = $.ui.resolve(e)
-    const { isWorking, frame, waiting } = await read($, live)
+    const { isWorking, waiting } = await read($, live)
+    const frame = await read($, frameAtom)
 
     // The frame drawn cell by cell, one column per side and no padding, so the
     // pane's own tree gets the width less two.

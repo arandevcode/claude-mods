@@ -22,7 +22,7 @@ Claude Code mod, mirror of [`opencode-thinking`](https://github.com/arandevcode/
 | `WAITING · MONITOR` / `TASK` / `SCHEDULE` | amber | The turn is over but a monitor, a background task or a scheduled wakeup is still alive (counts shown, e.g. `WAITING · 2 TASKS`). |
 | `IDLE` | green | Nothing running and nothing pending. |
 
-A background task finishing wakes the session with a new turn, so the band goes back to `WORKING` and then to `IDLE`.
+A background shell, including the Monitor tool, shows as `TASK`; `MONITOR` is for MCP monitors. A background task finishing wakes the session with a new turn, so the band goes back to `WORKING` and then to `IDLE`.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/glow-thinking/images/glow-thinking-states.png" alt="The three states side by side" width="460">

@@ -6,6 +6,22 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### glow-thinking (0.2.1)
+
+- Fix: `WAITING` never showed when the Stop event arrived before the turn was
+  marked finished (the label was dropped while the band still counted the turn as
+  running). It is now kept whatever the order; WORKING still wins over WAITING.
+- Fix: a live Monitor tool or background shell reports as a `shell` task, so it
+  reads `WAITING · TASK`; `MONITOR` is reserved for MCP monitors. Documented.
+- Harden: the animation frame lives in its own value so its ticks cannot race a
+  state change, state writes retry, and the stats write can no longer block the band.
+
+### quota-panel (0.2.0)
+
+- New: "read Xm ago" under the title; amber `⚠` after 10 minutes without a new
+  reading, and a note when a window reset since the reading. A 30 s timer keeps the
+  counter moving while nothing else redraws.
+
 ### glow-thinking (0.2.0)
 
 - Fix: the band stayed IDLE while subagents were still running after the main

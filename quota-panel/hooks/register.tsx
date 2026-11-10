@@ -5,6 +5,11 @@ import type { Snapshot } from '../types'
 
 const PANE = 'quota'
 const snapshot = atom({ plugin: 'quota-panel', key: 'snapshot' } as const, null)
+// Bumped every half minute so the "read Xm ago" line keeps counting while nothing else redraws.
+const tick = atom({ plugin: 'quota-panel', key: 'tick' } as const, 0)
+
+// Minutes after which a reading is flagged as stale: the limits only refresh when a response reports them.
+const STALE_MIN = 10
 
 const THRESHOLDS = [80, 90, 95]
 // Window length in minutes, to work out the pace like the opencode2 sidebar.
@@ -34,6 +39,9 @@ const when = (iso: string) => {
   return sameDay ? hm : `${d.getDate()} ${month} ${hm}`
 }
 
+// How long ago the last rate-limit reading was taken.
+const ago = (mins: number) => (mins < 1 ? 'just now' : `${dur(mins)} ago`)
+
 export const register: Register = on => {
   const announced: Record<string, number> = {}
 
@@ -41,6 +49,9 @@ export const register: Register = on => {
     await $.command.register({ name: 'quota', description: 'Open the quota side panel' })
     void $.ui.open({ id: PANE, title: 'Quota' })
     $.ui.status(undefined)
+    $.clock.every(30000, () => {
+      void update($, tick, n => n + 1).catch(() => {})
+    })
     return next(e)
   })
 
@@ -57,6 +68,7 @@ export const register: Register = on => {
         resetsAt: w.resetsAt,
       })),
       usd: e.cost ? e.cost.usd : null,
+      readAt: await $.clock.now(),
     }
     await update($, snapshot, () => snap)
     $.ui.status(undefined)
@@ -74,6 +86,7 @@ export const register: Register = on => {
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const { Box, Text } = $.ui.resolve(e)
     const snap = await read($, snapshot)
+    await read($, tick)
     const width = Math.max(20, e.props.bodyColumns - 2)
     const now = await $.clock.now()
     const wins = snap ? snap.windows : []
@@ -95,6 +108,15 @@ export const register: Register = on => {
               <Text color="suggestion"> ${snap.usd.toFixed(2)} this session</Text>
             ) : null}
           </Box>
+          {snap && snap.readAt !== undefined ? (() => {
+            const age = (now - snap.readAt) / 60000
+            const stale = age >= STALE_MIN
+            return (
+              <Text color={stale ? 'warning' : 'inactive'}>
+                {stale ? `⚠ read ${ago(age)} · send a message to refresh` : `read ${ago(age)}`}
+              </Text>
+            )
+          })() : null}
           {wins.length === 0 ? (
             <Text color="inactive">Waiting for the first rate-limit reading (needs a Claude subscription).</Text>
           ) : null}
@@ -132,6 +154,9 @@ export const register: Register = on => {
                 <Text color={c}>{'▓'.repeat(filled)}{'░'.repeat(width - filled)}</Text>
                 <Row l={`${left}% left`} r={`${used}% used`} lc={c} />
                 {pace ? <Row l="" r={pace} rc={paceColor} /> : null}
+                {remain !== null && remain < 0 ? (
+                  <Text color="warning">window reset since this reading · refreshes on your next message</Text>
+                ) : null}
               </Box>
             )
           })}

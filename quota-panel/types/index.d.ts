@@ -1,8 +1,8 @@
 export type Window = { kind: string; percentUsed: number; resetsAt?: string }
-export type Snapshot = { windows: Window[]; usd: number | null }
+export type Snapshot = { windows: Window[]; usd: number | null; readAt?: number }
 
 declare module 'claude-code' {
   interface PluginState {
-    'quota-panel': { snapshot: Snapshot | null; isHidden: boolean }
+    'quota-panel': { snapshot: Snapshot | null; isHidden: boolean; tick: number }
   }
 }
