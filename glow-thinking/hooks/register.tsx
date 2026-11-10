@@ -5,9 +5,10 @@ import type { ModelStat } from '../types'
 
 const stats = atom({ plugin: 'glow-thinking', key: 'stats2' } as const, {} as Record<string, ModelStat>)
 // What the borders read: whether a turn runs, and the animation frame.
-const live = atom({ plugin: 'glow-thinking', key: 'live' } as const, { isWorking: false, frame: 0 })
+const live = atom({ plugin: 'glow-thinking', key: 'live' } as const, { isWorking: false, frame: 0, waiting: '' })
 
 const IDLE_COLOR = 'success'
+const WAIT_COLOR = 'warning'
 
 // Hue 0-360 to #rrggbb at full saturation, lightness 0.55.
 const hsl = (h: number) => {
@@ -21,18 +22,46 @@ const hsl = (h: number) => {
 
 // The colour of cell `i` of a border `total` cells round: one hue per cell
 // along the perimeter, the whole ring turning with the frame. Idle is solid.
-const cell = (i: number, total: number, frame: number, isWorking: boolean) =>
-  isWorking ? hsl((((i / total) * 360 + frame * 22) % 360 + 360) % 360) : IDLE_COLOR
+const cell = (i: number, total: number, frame: number, isWorking: boolean, waiting = '') =>
+  isWorking ? hsl((((i / total) * 360 + frame * 22) % 360 + 360) % 360) : waiting ? WAIT_COLOR : IDLE_COLOR
+
+// "MONITOR", "2 TASKS", "SCHEDULE"... what is still in flight once the turn ends.
+type InFlight = { type: string }
+const waitLabel = (tasks: InFlight[] = [], crons: unknown[] = []) => {
+  const monitors = tasks.filter(t => t.type === 'monitor').length
+  const others = tasks.length - monitors
+  const parts = [
+    monitors && (monitors > 1 ? `${monitors} MONITORS` : 'MONITOR'),
+    others && (others > 1 ? `${others} TASKS` : 'TASK'),
+    crons.length && 'SCHEDULE',
+  ].filter(Boolean)
+  return parts.join(' + ')
+}
 
 const fmt = (ms: number) => {
   const s = Math.round(ms / 1000)
   return s >= 60 ? `${Math.floor(s / 60)}m${s % 60}s` : `${s}s`
 }
 
+type Run = { main: boolean; agents: Set<string>; timer: { cancel: () => void } | null }
+
+// WORKING while the main turn or any subagent/teammate loop runs.
+async function sync($: any, run: Run) {
+  const busy = run.main || run.agents.size > 0
+  if (busy && !run.timer) {
+    run.timer = $.clock.every(180, () => {
+      void update($, live, s => ({ ...s, frame: s.frame + 1 })).catch(() => {})
+    })
+  } else if (!busy && run.timer) {
+    run.timer.cancel()
+    run.timer = null
+  }
+  await update($, live, s => ({ isWorking: busy, frame: busy ? s.frame : 0, waiting: busy ? '' : s.waiting }))
+}
+
 export const register: Register = on => {
   let model = 'unknown'
   let startedAt = 0
-  let timer: { cancel: () => void } | null = null
   const pending: Record<string, ModelStat> = {}
   const bump = (m: string): ModelStat => (pending[m] ??= { steps: 0, thinkingMs: 0 })
 
@@ -44,15 +73,28 @@ export const register: Register = on => {
     return next(e)
   })
 
+  // WORKING while the main turn or any subagent/teammate loop runs.
+  const run: Run = { main: false, agents: new Set<string>(), timer: null }
+
   on('turn.start', async ($, e, next) => {
     if (e.agentId === undefined) {
       startedAt = await $.clock.now()
-      await update($, live, s => ({ ...s, isWorking: true }))
-      timer?.cancel()
-      timer = $.clock.every(180, () => {
-        void update($, live, s => ({ ...s, frame: s.frame + 1 }))
-      })
-    }
+      run.main = true
+    } else run.agents.add(e.agentId)
+    await sync($, run)
+    return next(e)
+  })
+
+  // When a turn ends, the engine says what is still running in the background.
+  on('classic.Stop', async ($, e, next) => {
+    run.main = false
+    const waiting = waitLabel(e.background_tasks, e.session_crons)
+    await update($, live, s => ({ ...s, waiting: s.isWorking ? '' : waiting }))
+    return next(e)
+  })
+  on('classic.SubagentStop', async ($, e, next) => {
+    const waiting = waitLabel(e.background_tasks, e.session_crons)
+    await update($, live, s => ({ ...s, waiting: s.isWorking ? '' : waiting }))
     return next(e)
   })
 
@@ -64,10 +106,8 @@ export const register: Register = on => {
 
   on('turn.complete', async ($, e, next) => {
     if (e.agentId === undefined) {
-      timer?.cancel()
-      timer = null
+      run.main = false
       bump(model).thinkingMs += (await $.clock.now()) - startedAt
-      await update($, live, () => ({ isWorking: false, frame: 0 }))
 
       const add = { ...pending }
       for (const k of Object.keys(pending)) delete pending[k]
@@ -79,7 +119,8 @@ export const register: Register = on => {
         }
         return out
       })
-    }
+    } else run.agents.delete(e.agentId)
+    await sync($, run)
     return next(e)
   })
 
@@ -87,7 +128,7 @@ export const register: Register = on => {
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey) return next(e)
     const { Box, Text } = $.ui.resolve(e)
-    const { isWorking, frame } = await read($, live)
+    const { isWorking, frame, waiting } = await read($, live)
 
     // Keep what other mods draw here (the HUD) and put the band beneath it.
     const rest = await next(e)
@@ -98,9 +139,9 @@ export const register: Register = on => {
     const total = 2 * W + 2 * (H - 2)
     const top = [...'╭' + '─'.repeat(W - 2) + '╮']
     const bottom = [...'╰' + '─'.repeat(W - 2) + '╯']
-    const label = isWorking ? 'WORKING' : 'IDLE'
+    const label = isWorking ? 'WORKING' : waiting ? `WAITING · ${waiting}` : 'IDLE'
     const pad = ' '.repeat(Math.max(0, W - 4 - label.length))
-    const at = (i: number) => cell(i, total, frame, isWorking)
+    const at = (i: number) => cell(i, total, frame, isWorking, waiting)
 
     return (
       <Box flexDirection="column">
@@ -120,14 +161,14 @@ export const register: Register = on => {
   on('ui.render', { component: 'Pane' }, async ($, e, next) => {
     const inner = await next(e)
     const { Box, Text } = $.ui.resolve(e)
-    const { isWorking, frame } = await read($, live)
+    const { isWorking, frame, waiting } = await read($, live)
 
     // The frame drawn cell by cell, one column per side and no padding, so the
     // pane's own tree gets the width less two.
     const W = Math.max(8, e.props.bodyColumns)
     const H = Math.max(3, e.props.scroll.bodyRows)
     const total = 2 * W + 2 * (H - 2)
-    const at = (i: number) => cell(i, total, frame, isWorking)
+    const at = (i: number) => cell(i, total, frame, isWorking, waiting)
     const top = [...'╭' + '─'.repeat(W - 2) + '╮']
     const bottom = [...'╰' + '─'.repeat(W - 2) + '╯']
     const rows = Array.from({ length: H - 2 }, (_, r) => r)
