@@ -76,3 +76,17 @@ test('a window that reset after the reading is called out', async ($, on) => {
   expect(await ui.find({ type: 'Text', text: /window reset since this reading/ })).not.toBeNull()
   await ui.unmount()
 })
+
+test('the bar keeps its width and draws one amber pace tick', async ($, on) => {
+  const ui = await draw(snapshot, $, on)
+  // 5h window: 3h12m left of 5h = 64% of the time, over a 38-cell bar (width 40 - 2).
+  const tick = await ui.find({ type: 'Text', text: '│' })
+  expect(tick).not.toBeNull()
+  await ui.unmount()
+})
+
+test('a window without reset draws no tick', async ($, on) => {
+  const ui = await draw({ windows: [{ kind: 'five_hour', percentUsed: 10 }], usd: null }, $, on)
+  expect((await ui.find({ type: 'Text', text: '│' })) ?? null).toBeNull()
+  await ui.unmount()
+})

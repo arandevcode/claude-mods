@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### quota-panel (0.3.0)
+
+- New: pace tick. A one-cell amber `│` on each bar marks how much of the window is
+  left, so the fill (quota left) compares with the clock at a glance: fill left of
+  the tick = margin, right of it = ahead. It replaces a cell (same bar width) and is
+  skipped for windows without a reset time or a known length.
+
+### glow-thinking (0.2.2)
+
+- Fix: `WAITING` fell back to `IDLE` while background tasks were still running.
+  A wake-up turn (a task finishing, a stopped monitor) cleared the label and could
+  end without a Stop carrying the task list. The label is now kept across turns and
+  only Stop / SubagentStop rewrite it.
+
 ### glow-thinking (0.2.1)
 
 - Fix: `WAITING` never showed when the Stop event arrived before the turn was

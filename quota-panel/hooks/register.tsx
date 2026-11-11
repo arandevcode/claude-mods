@@ -2,6 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Snapshot } from '../types'
+import { gaugeParts, paceLinePercent } from './pace'
 
 const PANE = 'quota'
 const snapshot = atom({ plugin: 'quota-panel', key: 'snapshot' } as const, null)
@@ -127,7 +128,8 @@ export const register: Register = on => {
             const span = SPAN[w.kind]
             const label = span?.label ?? w.kind
             const remain = w.resetsAt ? (Date.parse(w.resetsAt) - now) / 60000 : null
-            const filled = Math.max(0, Math.min(width, Math.round((left / 100) * width)))
+            // The bar shows quota LEFT, so the tick (time left) goes straight, no inversion.
+            const bar = gaugeParts(left, width, paceLinePercent(w, now))
 
             let pace = ''
             let paceColor = 'inactive'
@@ -151,7 +153,11 @@ export const register: Register = on => {
                   r={remain !== null && w.resetsAt ? `in ${dur(remain)} (${when(w.resetsAt)})` : '—'}
                   rc={c === 'error' ? 'error' : 'inactive'}
                 />
-                <Text color={c}>{'▓'.repeat(filled)}{'░'.repeat(width - filled)}</Text>
+                <Box>
+                  {bar.before ? <Text color={c}>{bar.before}</Text> : null}
+                  {bar.tick ? <Text color="warning">{bar.tick}</Text> : null}
+                  {bar.after ? <Text color={c}>{bar.after}</Text> : null}
+                </Box>
                 <Row l={`${left}% left`} r={`${used}% used`} lc={c} />
                 {pace ? <Row l="" r={pace} rc={paceColor} /> : null}
                 {remain !== null && remain < 0 ? (
