@@ -6,9 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### quota-panel (0.3.1)
+
+- Change: the pace tick uses the theme's text colour instead of amber, like the OpenCode plugin.
+
 ### quota-panel (0.3.0)
 
-- New: pace tick. A one-cell amber `│` on each bar marks how much of the window is
+- New: pace tick. A one-cell `│` in the text colour on each bar marks how much of the window is
   left, so the fill (quota left) compares with the clock at a glance: fill left of
   the tick = margin, right of it = ahead. It replaces a cell (same bar width) and is
   skipped for windows without a reset time or a known length.

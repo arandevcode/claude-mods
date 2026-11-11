@@ -155,7 +155,7 @@ export const register: Register = on => {
                 />
                 <Box>
                   {bar.before ? <Text color={c}>{bar.before}</Text> : null}
-                  {bar.tick ? <Text color="warning">{bar.tick}</Text> : null}
+                  {bar.tick ? <Text color="text">{bar.tick}</Text> : null}
                   {bar.after ? <Text color={c}>{bar.after}</Text> : null}
                 </Box>
                 <Row l={`${left}% left`} r={`${used}% used`} lc={c} />
