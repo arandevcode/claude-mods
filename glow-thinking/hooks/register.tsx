@@ -69,7 +69,9 @@ async function sync($: any, run: Run) {
     run.timer.cancel()
     run.timer = null
   }
-  await patchLive($, s => ({ isWorking: busy, waiting: busy && !s.isWorking ? '' : s.waiting }))
+  // `waiting` is kept across turns: a wake-up turn (a task finishing, a stopped
+  // monitor) may end without a Stop carrying the list, and only Stop rewrites it.
+  await patchLive($, s => ({ isWorking: busy, waiting: s.waiting }))
 }
 
 export const register: Register = on => {

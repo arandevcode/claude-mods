@@ -101,3 +101,18 @@ test('WAITING survives Stop landing before turn.complete (a live Monitor shows a
   expect(st.live().isWorking).toBe(false)
   expect(st.live().waiting).toBe('TASK')
 })
+
+test('a wake-up turn that ends without Stop keeps WAITING', async ($, on) => {
+  const st = store(on)
+  on('clock.now', () => ({ value: 1000 }))
+  on('clock.every', () => ({ value: { id: 'c1' } }))
+  on('turn.start', (_$, e) => e)
+  on('turn.complete', (_$, e) => ({ ...e, text: '' }))
+  on('classic.Stop', () => ({}))
+  await $.turn.start({ text: 'x', turnId: 'm' })
+  await ($ as any).classic.Stop({ background_tasks: [{ id: 'mon', type: 'shell', status: 'running', description: 'w' }], session_crons: [] })
+  await $.turn.complete({ turnId: 'm', answer: '' } as any)
+  await $.turn.start({ text: 'notification', turnId: 'n' })
+  await $.turn.complete({ turnId: 'n', answer: '' } as any)
+  expect(st.live().waiting).toBe('TASK')
+})
