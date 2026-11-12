@@ -135,13 +135,17 @@ export const register: Register = on => {
             let paceColor = 'inactive'
             if (span && remain !== null) {
               const elapsed = ((span.mins - remain) / span.mins) * 100
-              const diff = Math.round(elapsed - w.percentUsed)
+              const exact = elapsed - w.percentUsed
+              const diff = Math.round(exact)
+              // The time shown is the gap to the pace line (the same share of the window,
+              // expressed as time), not the time left until the window resets.
+              const gap = dur((Math.abs(exact) / 100) * span.mins)
               if (Math.abs(diff) < 2) pace = 'on pace'
               else if (diff > 0) {
-                pace = `margin +${diff}% · ${dur(remain)}`
+                pace = `margin +${diff}% · ${gap}`
                 paceColor = 'success'
               } else {
-                pace = `ahead ${diff}% · ${dur(remain)}`
+                pace = `ahead ${diff}% · ${gap}`
                 paceColor = 'error'
               }
             }
