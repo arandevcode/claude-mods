@@ -6,6 +6,26 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## 2026-11-12
+
+Each mod is versioned and tagged on its own (`glow-thinking-vX.Y.Z`, `quota-panel-vX.Y.Z`, `hex-swatch-vX.Y.Z`).
+Current: glow-thinking 0.3.0, quota-panel 0.3.2, hex-swatch 0.4.0.
+
+### hex-swatch (0.4.0)
+
+- First public release (it lived as a private mod before): a color square before every `#rgb`, `#rrggbb`
+  and `#rrggbbaa` in Claude's replies, in text, headings, lists, quotes, tables, inline code and code blocks.
+- Options: `glyph` (`██` by default, `■`, `●`, `▮▮`) and `codeBlocks` (`squares` redraws a code block that
+  holds a color as plain rows, `keep` leaves it as it is).
+- Works together with a mod that draws the replies itself (such as a skin); keep it before that mod in
+  `enabledPlugins`.
+
+### quota-panel (0.3.2)
+
+- Fix: the time next to `ahead` / `margin` was the time left until the window resets. It is now the
+  gap to the pace line expressed as time (for example `ahead -27% · 1h 20m` on a 5h window), matching
+  the OpenCode plugin.
+
 ### glow-thinking (0.3.0)
 
 - New: `stopHooks` option (`on` by default). On Claude Team and Enterprise logins the organization's
@@ -79,5 +99,6 @@ All notable changes to this project are documented here. The format follows
   % left, reset time and pace), session cost, and toasts at 80/90/95%.
 - `/quota` opens the panel; it also opens when a session starts.
 
+[Unreleased]: https://github.com/arandevcode/claude-mods/compare/v0.1.1...HEAD
 [0.1.1]: https://github.com/arandevcode/claude-mods/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/arandevcode/claude-mods/releases/tag/v0.1.0

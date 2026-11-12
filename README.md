@@ -20,13 +20,15 @@ Suite of mods for [Claude Code](https://claude.com/claude-code).
 | Mod | Type | Mirrors | Version | Description |
 |-----|------|---------|---------|-------------|
 | glow-thinking | `🧩 mod` | `opencode-thinking` | 0.3.0 | Status band above the prompt and gradient border around every side panel: WORKING (rainbow) while the turn or any subagent runs, WAITING (amber) for monitors and background tasks, IDLE (green) when done. /thinking shows time per model. |
-| quota-panel | `🧩 mod` | `opencode-quota-extended` | 0.3.1 | Side panel with your Claude rate-limit windows (5h / weekly): bars, % left, reset time and pace, plus session cost and toasts at 80/90/95%. |
+| quota-panel | `🧩 mod` | `opencode-quota-extended` | 0.3.2 | Side panel with your Claude rate-limit windows (5h / weekly): bars, % left, reset time and pace, plus session cost and toasts at 80/90/95%. |
+| hex-swatch | `🧩 mod` | — | 0.4.0 | Shows a color square next to every hex color in Claude's replies (text, tables, lists, code blocks). Works alone and together with a skin. |
 
 ## Install
 
 ```
 /plugin install glow-thinking --marketplace arandevcode/claude-mods
 /plugin install quota-panel --marketplace arandevcode/claude-mods
+/plugin install hex-swatch --marketplace arandevcode/claude-mods
 ```
 
 At the prompt of a terminal session. Each mod is independent.
@@ -39,9 +41,16 @@ At the prompt of a terminal session. Each mod is independent.
   <sub><em>glow-thinking</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>quota-panel</em></sub>
 </p>
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/hex-swatch/images/hex-swatch-mosaic.webp" alt="hex-swatch" width="420">
+  <br>
+  <sub><em>hex-swatch</em></sub>
+</p>
+
 ## Uninstall
 
 ```
 /plugin uninstall glow-thinking
 /plugin uninstall quota-panel
+/plugin uninstall hex-swatch
 ```
