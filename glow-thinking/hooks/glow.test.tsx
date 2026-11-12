@@ -116,3 +116,37 @@ test('a wake-up turn that ends without Stop keeps WAITING', async ($, on) => {
   await $.turn.complete({ turnId: 'n', answer: '' } as any)
   expect(st.live().waiting).toBe('TASK')
 })
+
+test('stopHooks off: WAITING comes from the running background subagents', { options: { stopHooks: 'off' } }, async ($, on) => {
+  const st = store(on)
+  on('clock.now', () => ({ value: 1000 }))
+  on('clock.every', () => ({ value: { id: 'c1' } }))
+  on('turn.start', (_$, e) => e)
+  on('turn.complete', (_$, e) => ({ ...e, text: '' }))
+  // Two subagents alive after the main turn, one idle teammate (not work).
+  on('agent.list', () => ({
+    value: [
+      { id: 'sub1', status: 'running' },
+      { id: 'sub2', status: 'waiting' },
+      { id: 'mate', status: 'idle' },
+    ],
+  }))
+  await $.turn.start({ text: 'x', turnId: 'm' })
+  await $.turn.complete({ turnId: 'm', answer: '' } as any)
+  expect(st.live().waiting).toBe('2 AGENTS')
+})
+
+test('stopHooks off: the agent that just ended is not counted', { options: { stopHooks: 'off' } }, async ($, on) => {
+  const st = store(on)
+  on('clock.now', () => ({ value: 1000 }))
+  on('clock.every', () => ({ value: { id: 'c1' } }))
+  on('turn.start', (_$, e) => e)
+  on('turn.complete', (_$, e) => ({ ...e, text: '' }))
+  // The list still shows the finishing agent as running when its turn.complete fires.
+  on('agent.list', () => ({ value: [{ id: 'sub1', status: 'running' }] }))
+  await $.turn.start({ text: 'x', turnId: 'm' })
+  await $.turn.start({ text: 'y', turnId: 'a', agentId: 'sub1' })
+  await $.turn.complete({ turnId: 'm', answer: '' } as any)
+  await $.turn.complete({ turnId: 'a', agentId: 'sub1', answer: '' } as any)
+  expect(st.live().waiting).toBe('')
+})

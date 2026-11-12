@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### glow-thinking (0.3.0)
+
+- New: `stopHooks` option (`on` by default). On Claude Team and Enterprise logins the organization's
+  guard (`cc-plugin-sec-default`) skips `classic.Stop` and `classic.SubagentStop` and prints a notice
+  on every load. Set `stopHooks` to `off` and the mod no longer registers them.
+- New: with `stopHooks` off, `WAITING` still shows background subagents (`AGENT` / `2 AGENTS`),
+  read from `$.agent.list()`. Monitors, background shells and schedules need the Stop hook, so they
+  are not shown in that mode: no engine call lists them.
+
 ### quota-panel (0.3.1)
 
 - Change: the pace tick uses the theme's text colour instead of amber, like the OpenCode plugin.

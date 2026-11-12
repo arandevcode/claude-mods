@@ -40,6 +40,16 @@ Desde una shell: `claude plugin install glow-thinking --marketplace arandevcode/
 
 Ejecuta `/plugin update glow-thinking` y **reinicia la sesión**: un mod ya cargado no se sustituye en una sesión en marcha (`/reload-plugins` no basta). Si el plugin está instalado en más de un ámbito, actualiza cada uno, p. ej. `claude plugin update glow-thinking@arandevcode-mods --scope user`.
 
+## Cuentas de organización (Claude Team / Enterprise)
+
+En esos inicios de sesión el guard integrado de Claude Code se salta los hooks `classic.Stop` y `classic.SubagentStop`, con los que este mod lista monitores, tareas en segundo plano y programaciones, y muestra un aviso por cada uno en cada carga. Desactívalos en `/config` (opción **Stop hooks** = `off`) o en `settings.json`:
+
+```json
+{ "pluginConfigs": { "glow-thinking@arandevcode-mods": { "options": { "stopHooks": "off" } } } }
+```
+
+Los avisos desaparecen y `WAITING` sigue funcionando para subagentes en segundo plano (`WAITING · AGENT`, `WAITING · 2 AGENTS`). Los monitores, shells en segundo plano y programaciones no se muestran en ese modo: el motor no tiene ninguna llamada que los liste. Recarga los plugins tras cambiarlo.
+
 ## Notas
 
 - El nombre del mod ordena antes que `quota-panel` a propósito: su borde envuelve cada panel, y un panel dibujado por un mod que cargue antes se lo ocultaría.

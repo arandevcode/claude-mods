@@ -40,6 +40,18 @@ From a shell: `claude plugin install glow-thinking --marketplace arandevcode/cla
 
 Run `/plugin update glow-thinking`, then **restart the session**: a loaded mod is not replaced in a running session (`/reload-plugins` is not enough). If the plugin is installed in more than one scope, update each one, e.g. `claude plugin update glow-thinking@arandevcode-mods --scope user`.
 
+## Organization accounts (Claude Team / Enterprise)
+
+On those logins Claude Code's built-in guard skips the `classic.Stop` and `classic.SubagentStop` hooks
+this mod uses to list monitors, background tasks and schedules, and prints a notice for each one on every
+load. Turn them off in `/config` (option **Stop hooks** = `off`) or in `settings.json`:
+
+```json
+{ "pluginConfigs": { "glow-thinking@arandevcode-mods": { "options": { "stopHooks": "off" } } } }
+```
+
+The notices go away and `WAITING` keeps working for background subagents (`WAITING · AGENT`, `WAITING · 2 AGENTS`). Monitors, background shells and schedules are not shown in that mode: the engine has no call that lists them. Reload the plugins after changing it.
+
 ## Notes
 
 - The mod's name sorts before `quota-panel` on purpose: its border wraps every panel, and a panel drawn by a mod that loads earlier would hide it from the border.

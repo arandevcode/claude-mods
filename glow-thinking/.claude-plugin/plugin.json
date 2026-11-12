@@ -1,10 +1,22 @@
 {
   "name": "glow-thinking",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Status band above the prompt and gradient border around every side panel: WORKING (rainbow) while the turn or any subagent runs, WAITING (amber) for monitors and background tasks, IDLE (green) when done. /thinking shows time per model.",
   "author": {
     "name": "arandevcode"
   },
   "license": "MIT",
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "stopHooks": {
+      "type": "string",
+      "title": "Stop hooks",
+      "description": "on registers classic.Stop to list monitors, background tasks and schedules in WAITING. Set off on Claude Team or Enterprise logins, where the organization's guard skips those hooks and shows a notice: WAITING then shows background subagents only.",
+      "options": [
+        "on",
+        "off"
+      ],
+      "default": "on"
+    }
+  }
 }

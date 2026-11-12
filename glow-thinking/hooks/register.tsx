@@ -40,6 +40,19 @@ const waitLabel = (tasks: InFlight[] = [], crons: unknown[] = []) => {
   return parts.join(' + ')
 }
 
+// Background subagents still alive once the turn is over: the one part of WAITING the engine lists
+// without the classic Stop event (`$.agent.list()`), so it also works where an organization's guard skips Stop.
+const agentLabel = (n: number) => (n === 0 ? '' : n === 1 ? 'AGENT' : `${n} AGENTS`)
+
+async function agentsWaiting($: any, exceptId?: string): Promise<string> {
+  try {
+    const list: { id: string; status: string }[] = await $.agent.list()
+    return agentLabel(list.filter(a => a.id !== exceptId && (a.status === 'running' || a.status === 'waiting')).length)
+  } catch {
+    return ''
+  }
+}
+
 const fmt = (ms: number) => {
   const s = Math.round(ms / 1000)
   return s >= 60 ? `${Math.floor(s / 60)}m${s % 60}s` : `${s}s`
@@ -74,7 +87,10 @@ async function sync($: any, run: Run) {
   await patchLive($, s => ({ isWorking: busy, waiting: s.waiting }))
 }
 
-export const register: Register = on => {
+export const register: Register = (on, options) => {
+  // `stopHooks: 'off'` leaves out the classic.Stop and classic.SubagentStop hooks. Claude Code's guard on Team and
+  // Enterprise logins skips them and says so on every load; without them WAITING shows background subagents only.
+  const hasStopHooks = options.stopHooks !== 'off'
   let model = 'unknown'
   let startedAt = 0
   const pending: Record<string, ModelStat> = {}
@@ -101,18 +117,21 @@ export const register: Register = on => {
   })
 
   // When a turn ends, the engine says what is still running in the background.
-  on('classic.Stop', async ($, e, next) => {
-    // Keep the label whatever the order: Stop can land before turn.complete,
-    // and WORKING wins over WAITING on screen anyway.
-    const waiting = waitLabel(e.background_tasks, e.session_crons)
-    await patchLive($, s => ({ ...s, waiting }))
-    return next(e)
-  })
-  on('classic.SubagentStop', async ($, e, next) => {
-    const waiting = waitLabel(e.background_tasks, e.session_crons)
-    await patchLive($, s => ({ ...s, waiting }))
-    return next(e)
-  })
+  if (hasStopHooks) {
+    // When a turn ends, the engine says what is still running in the background.
+    on('classic.Stop', async ($, e, next) => {
+      // Keep the label whatever the order: Stop can land before turn.complete,
+      // and WORKING wins over WAITING on screen anyway.
+      const waiting = waitLabel(e.background_tasks, e.session_crons)
+      await patchLive($, s => ({ ...s, waiting }))
+      return next(e)
+    })
+    on('classic.SubagentStop', async ($, e, next) => {
+      const waiting = waitLabel(e.background_tasks, e.session_crons)
+      await patchLive($, s => ({ ...s, waiting }))
+      return next(e)
+    })
+  }
 
   on('turn.step', async function* ($, e, next) {
     model = e.model
@@ -127,6 +146,10 @@ export const register: Register = on => {
     } else run.agents.delete(e.agentId)
     // The band first: it must follow the turn even if the stats write fails.
     await sync($, run)
+    if (!hasStopHooks) {
+      const waiting = await agentsWaiting($, e.agentId)
+      await patchLive($, st => ({ ...st, waiting }))
+    }
 
     if (e.agentId === undefined) {
       const add = { ...pending }
