@@ -1,0 +1,33 @@
+{
+  "name": "hex-swatch",
+  "version": "0.4.0",
+  "description": "Shows a small color square next to every hex color (#rgb, #rrggbb, #rrggbbaa) in Claude's replies.",
+  "author": {
+    "name": "arandevcode"
+  },
+  "license": "MIT",
+  "userConfig": {
+    "glyph": {
+      "type": "string",
+      "title": "Swatch",
+      "description": "The square drawn before each hex code. The double block is the tallest: it fills the whole line and, two cells wide, is almost square.",
+      "options": [
+        "██",
+        "■",
+        "●",
+        "▮▮"
+      ],
+      "default": "██"
+    },
+    "codeBlocks": {
+      "type": "string",
+      "title": "Code blocks",
+      "description": "squares redraws a code block that holds a color as plain rows with the squares (it loses its syntax highlighting); keep leaves it as it is, without squares.",
+      "options": [
+        "squares",
+        "keep"
+      ],
+      "default": "squares"
+    }
+  }
+}

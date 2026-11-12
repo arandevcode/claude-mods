@@ -3,6 +3,7 @@
   "owner": {
     "name": "arandevcode"
   },
+  "description": "Claude Code mods by arandevcode: thinking glow, quota panel and hex color swatches.",
   "plugins": [
     {
       "name": "glow-thinking",
@@ -13,6 +14,11 @@
       "name": "quota-panel",
       "source": "./quota-panel",
       "description": "Side panel with your Claude rate-limit windows (5h / weekly): bars, % left, reset time and pace, plus session cost and toasts at 80/90/95%."
+    },
+    {
+      "name": "hex-swatch",
+      "source": "./hex-swatch",
+      "description": "Shows a color square next to every hex color (#rgb, #rrggbb, #rrggbbaa) in Claude's replies: text, tables, lists and code blocks. Works alone and together with a skin."
     }
   ]
 }
