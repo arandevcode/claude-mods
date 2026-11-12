@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/quota-panel/images/quota-panel.gif" alt="Panel lateral de cuota" width="460">
   <br>
-  <sub><em>Lectura reciente, marcada como caducada a los 10 minutos y refrescada después (datos inventados)</em></sub>
+  <sub><em>Lectura reciente, marcada como caducada tras 11 minutos sin respuesta y refrescada con el siguiente mensaje (una sesión real)</em></sub>
 </p>
 
 # quota-panel

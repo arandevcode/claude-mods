@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/arandevcode/claude-mods/main/quota-panel/images/quota-panel.gif" alt="Quota side panel" width="460">
   <br>
-  <sub><em>Fresh reading, then flagged as stale after 10 minutes, then refreshed (made-up data)</em></sub>
+  <sub><em>A fresh reading, flagged as stale after 11 minutes without a response, then refreshed by the next message (a real session)</em></sub>
 </p>
 
 # quota-panel
